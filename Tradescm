@@ -1,0 +1,263 @@
+-- Trade Scam Executor Script - Slightly Bigger Square (180×180) + Footer Fits Perfectly
+
+local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
+local TweenService = game:GetService("TweenService")
+local CoreGui = game:GetService("CoreGui")
+local Workspace = game:GetService("Workspace")
+
+if CoreGui:FindFirstChild("TradeScamGui") then
+    CoreGui.TradeScamGui:Destroy()
+end
+
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "TradeScamGui"
+screenGui.ResetOnSpawn = false
+screenGui.Parent = CoreGui
+
+-- Slightly bigger square to fit footer nicely
+local mainFrame = Instance.new("Frame")
+mainFrame.Name = "Main"
+mainFrame.Size = UDim2.new(0, 180, 0, 180)
+mainFrame.Position = UDim2.new(0.5, -90, 0.5, -90)
+mainFrame.BackgroundColor3 = Color3.fromRGB(18, 18, 28)
+mainFrame.BorderSizePixel = 0
+mainFrame.Parent = screenGui
+
+local uiCorner = Instance.new("UICorner")
+uiCorner.CornerRadius = UDim.new(0, 16)
+uiCorner.Parent = mainFrame
+
+-- Glow
+local glowStroke = Instance.new("UIStroke")
+glowStroke.Color = Color3.fromRGB(120, 100, 255)
+glowStroke.Thickness = 2.8
+glowStroke.Transparency = 0.6
+glowStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+glowStroke.Parent = mainFrame
+
+local pulseTween = TweenService:Create(glowStroke, TweenInfo.new(3, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true), {
+    Transparency = 0.4
+})
+pulseTween:Play()
+
+-- Gradient
+local gradient = Instance.new("UIGradient")
+gradient.Color = ColorSequence.new{
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(40, 40, 60)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(20, 20, 35))
+}
+gradient.Rotation = 90
+gradient.Parent = mainFrame
+
+-- Title Bar
+local titleBar = Instance.new("Frame")
+titleBar.Name = "TitleBar"
+titleBar.Size = UDim2.new(1, 0, 0, 34)
+titleBar.BackgroundColor3 = Color3.fromRGB(35, 35, 55)
+titleBar.BorderSizePixel = 0
+titleBar.Parent = mainFrame
+
+local titleGradient = Instance.new("UIGradient")
+titleGradient.Color = ColorSequence.new{
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(80, 70, 180)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(35, 35, 55))
+}
+titleGradient.Rotation = -45
+titleGradient.Parent = titleBar
+
+local titleCorner = Instance.new("UICorner")
+titleCorner.CornerRadius = UDim.new(0, 16)
+titleCorner.Parent = titleBar
+
+local titleLabel = Instance.new("TextLabel")
+titleLabel.Size = UDim2.new(1, -60, 1, 0)
+titleLabel.Position = UDim2.new(0, 14, 0, 0)
+titleLabel.BackgroundTransparency = 1
+titleLabel.Font = Enum.Font.GothamBlack
+titleLabel.Text = "Trade Scam"
+titleLabel.TextColor3 = Color3.fromRGB(220, 210, 255)
+titleLabel.TextSize = 17
+titleLabel.TextXAlignment = Enum.TextXAlignment.Left
+titleLabel.Parent = titleBar
+
+-- Close Button
+local closeBtn = Instance.new("TextButton")
+closeBtn.Size = UDim2.new(0, 24, 0, 24)
+closeBtn.Position = UDim2.new(1, -30, 0.5, -12)
+closeBtn.BackgroundColor3 = Color3.fromRGB(200, 60, 70)
+closeBtn.BorderSizePixel = 0
+closeBtn.Font = Enum.Font.GothamBold
+closeBtn.Text = "X"
+closeBtn.TextColor3 = Color3.new(1,1,1)
+closeBtn.TextSize = 16
+closeBtn.Parent = titleBar
+
+local closeCorner = Instance.new("UICorner")
+closeCorner.CornerRadius = UDim.new(0, 8)
+closeCorner.Parent = closeBtn
+
+closeBtn.MouseButton1Click:Connect(function()
+    screenGui:Destroy()
+end)
+
+-- Dragging
+local dragging = false
+local dragStart = nil
+local startPos = nil
+local originalCameraType = nil
+
+local inputBlocker = Instance.new("Frame")
+inputBlocker.Name = "DragBlocker"
+inputBlocker.Size = UDim2.new(1, 0, 1, 0)
+inputBlocker.BackgroundTransparency = 1
+inputBlocker.Active = false
+inputBlocker.ZIndex = 999999
+inputBlocker.Visible = false
+inputBlocker.Parent = screenGui
+
+titleBar.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        dragging = true
+        dragStart = input.Position
+        startPos = mainFrame.Position
+        
+        inputBlocker.Active = true
+        inputBlocker.Visible = true
+        
+        UserInputService.MouseBehavior = Enum.MouseBehavior.LockCurrentPosition
+        
+        local camera = Workspace.CurrentCamera
+        if camera then
+            originalCameraType = camera.CameraType
+            camera.CameraType = Enum.CameraType.Scriptable
+        end
+        
+        local conn; conn = input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then
+                dragging = false
+                inputBlocker.Active = false
+                inputBlocker.Visible = false
+                UserInputService.MouseBehavior = Enum.MouseBehavior.Default
+                if camera and originalCameraType then
+                    camera.CameraType = originalCameraType
+                end
+                conn:Disconnect()
+            end
+        end)
+    end
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+    if not dragging then return end
+    if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+        local delta = input.Position - dragStart
+        mainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+    end
+end)
+
+-- Toggle
+UserInputService.InputBegan:Connect(function(input, gp)
+    if gp then return end
+    if input.KeyCode == Enum.KeyCode.RightShift then
+        screenGui.Enabled = not screenGui.Enabled
+    end
+end)
+
+-- Buttons container
+local buttonsFrame = Instance.new("Frame")
+buttonsFrame.Size = UDim2.new(1, -16, 1, -52)
+buttonsFrame.Position = UDim2.new(0, 8, 0, 38)
+buttonsFrame.BackgroundTransparency = 1
+buttonsFrame.Parent = mainFrame
+
+local listLayout = Instance.new("UIListLayout")
+listLayout.Padding = UDim.new(0, 7)
+listLayout.SortOrder = Enum.SortOrder.LayoutOrder
+listLayout.FillDirection = Enum.FillDirection.Vertical
+listLayout.Parent = buttonsFrame
+
+local function makeToggleButton(text, baseColor, order)
+    local btn = Instance.new("TextButton")
+    btn.Size = UDim2.new(1, 0, 0, 38)
+    btn.BackgroundColor3 = baseColor
+    btn.BorderSizePixel = 0
+    btn.Font = Enum.Font.GothamSemibold
+    btn.Text = text
+    btn.TextColor3 = Color3.new(1,1,1)
+    btn.TextSize = 14
+    btn.AutoButtonColor = false
+    btn.LayoutOrder = order
+    btn.Parent = buttonsFrame
+
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0, 10)
+    corner.Parent = btn
+
+    local stroke = Instance.new("UIStroke")
+    stroke.Color = baseColor:Lerp(Color3.new(1,1,1), 0.3)
+    stroke.Thickness = 1.8
+    stroke.Transparency = 0.5
+    stroke.Parent = btn
+
+    local gradient = Instance.new("UIGradient")
+    gradient.Color = ColorSequence.new{
+        ColorSequenceKeypoint.new(0, Color3.new(1,1,1)),
+        ColorSequenceKeypoint.new(1, baseColor)
+    }
+    gradient.Rotation = -90
+    gradient.Transparency = NumberSequence.new(0.7, 0)
+    gradient.Parent = btn
+
+    local isToggled = false
+    local greenGlow = Color3.fromRGB(80, 220, 120)
+
+    local function updateState()
+        if isToggled then
+            TweenService:Create(btn, TweenInfo.new(0.3), {BackgroundColor3 = greenGlow}):Play()
+            TweenService:Create(stroke, TweenInfo.new(0.3), {Color = greenGlow, Transparency = 0.3}):Play()
+        else
+            TweenService:Create(btn, TweenInfo.new(0.3), {BackgroundColor3 = baseColor}):Play()
+            TweenService:Create(stroke, TweenInfo.new(0.3), {Color = baseColor:Lerp(Color3.new(1,1,1), 0.3), Transparency = 0.5}):Play()
+        end
+    end
+
+    btn.MouseButton1Click:Connect(function()
+        isToggled = not isToggled
+        updateState()
+    end)
+
+    btn.MouseEnter:Connect(function()
+        TweenService:Create(stroke, TweenInfo.new(0.25), {Transparency = 0.2}):Play()
+    end)
+
+    btn.MouseLeave:Connect(function()
+        if not isToggled then
+            TweenService:Create(stroke, TweenInfo.new(0.25), {Transparency = 0.5}):Play()
+        end
+    end)
+
+    btn.MouseButton1Down:Connect(function()
+        TweenService:Create(btn, TweenInfo.new(0.12), {Size = UDim2.new(1, 0, 0, 35)}):Play()
+    end)
+
+    btn.MouseButton1Up:Connect(function()
+        TweenService:Create(btn, TweenInfo.new(0.18), {Size = UDim2.new(1, 0, 0, 38)}):Play()
+    end)
+end
+
+makeToggleButton("Force Accept",         Color3.fromRGB(70, 160, 255), 1)
+makeToggleButton("Freeze Victim",        Color3.fromRGB(240, 70, 70),  2)
+makeToggleButton("Force Give All Brainrot", Color3.fromRGB(160, 70, 255), 3)
+
+-- Footer – now fits without overlap
+local footer = Instance.new("TextLabel")
+footer.Size = UDim2.new(1, -16, 0, 14)
+footer.Position = UDim2.new(0, 8, 1, -20)
+footer.BackgroundTransparency = 1
+footer.Font = Enum.Font.Gotham
+footer.Text = "Made By MakuScripts"
+footer.TextColor3 = Color3.fromRGB(160, 160, 200)
+footer.TextSize = 12
+footer.TextTransparency = 0.4
+footer.Parent = mainFrame
