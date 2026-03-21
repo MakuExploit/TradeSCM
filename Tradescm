@@ -1,11 +1,13 @@
--- Trade Scam Executor Script - Slightly Bigger Square (180×180) + Footer Fits Perfectly
+-- Trade Scam Executor GUI - Improved version (size & layout untouched)
+-- Updated: "Trade Scam 2.0" header + lighter buttons
 
-local Players = game:GetService("Players")
+local Players        = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
-local TweenService = game:GetService("TweenService")
-local CoreGui = game:GetService("CoreGui")
-local Workspace = game:GetService("Workspace")
+local TweenService   = game:GetService("TweenService")
+local CoreGui        = game:GetService("CoreGui")
+local Workspace      = game:GetService("Workspace")
 
+-- Destroy previous instance if exists
 if CoreGui:FindFirstChild("TradeScamGui") then
     CoreGui.TradeScamGui:Destroy()
 end
@@ -15,11 +17,13 @@ screenGui.Name = "TradeScamGui"
 screenGui.ResetOnSpawn = false
 screenGui.Parent = CoreGui
 
--- Slightly bigger square to fit footer nicely
+-- ────────────────────────────────────────────────────────────
+-- Main Frame (still exactly 180×180)
+-- ────────────────────────────────────────────────────────────
 local mainFrame = Instance.new("Frame")
 mainFrame.Name = "Main"
-mainFrame.Size = UDim2.new(0, 180, 0, 180)
-mainFrame.Position = UDim2.new(0.5, -90, 0.5, -90)
+mainFrame.Size       = UDim2.new(0, 180, 0, 180)
+mainFrame.Position   = UDim2.new(0.5, -90, 0.5, -90)
 mainFrame.BackgroundColor3 = Color3.fromRGB(18, 18, 28)
 mainFrame.BorderSizePixel = 0
 mainFrame.Parent = screenGui
@@ -28,40 +32,41 @@ local uiCorner = Instance.new("UICorner")
 uiCorner.CornerRadius = UDim.new(0, 16)
 uiCorner.Parent = mainFrame
 
--- Glow
-local glowStroke = Instance.new("UIStroke")
-glowStroke.Color = Color3.fromRGB(120, 100, 255)
-glowStroke.Thickness = 2.8
-glowStroke.Transparency = 0.6
-glowStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-glowStroke.Parent = mainFrame
+-- Outer glow (pulsing)
+local glow = Instance.new("UIStroke")
+glow.Color       = Color3.fromRGB(110, 90, 255)
+glow.Thickness   = 2.5
+glow.Transparency = 0.55
+glow.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+glow.Parent = mainFrame
 
-local pulseTween = TweenService:Create(glowStroke, TweenInfo.new(3, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true), {
-    Transparency = 0.4
-})
-pulseTween:Play()
+TweenService:Create(glow, TweenInfo.new(4, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true), {
+    Transparency = 0.35
+}):Play()
 
--- Gradient
+-- Background gradient
 local gradient = Instance.new("UIGradient")
 gradient.Color = ColorSequence.new{
-    ColorSequenceKeypoint.new(0, Color3.fromRGB(40, 40, 60)),
-    ColorSequenceKeypoint.new(1, Color3.fromRGB(20, 20, 35))
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(38, 38, 58)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(18, 18, 32))
 }
 gradient.Rotation = 90
 gradient.Parent = mainFrame
 
+-- ────────────────────────────────────────────────────────────
 -- Title Bar
+-- ────────────────────────────────────────────────────────────
 local titleBar = Instance.new("Frame")
 titleBar.Name = "TitleBar"
-titleBar.Size = UDim2.new(1, 0, 0, 34)
-titleBar.BackgroundColor3 = Color3.fromRGB(35, 35, 55)
-titleBar.BorderSizePixel = 0
+titleBar.Size              = UDim2.new(1, 0, 0, 34)
+titleBar.BackgroundColor3  = Color3.fromRGB(32, 32, 52)
+titleBar.BorderSizePixel   = 0
 titleBar.Parent = mainFrame
 
 local titleGradient = Instance.new("UIGradient")
 titleGradient.Color = ColorSequence.new{
-    ColorSequenceKeypoint.new(0, Color3.fromRGB(80, 70, 180)),
-    ColorSequenceKeypoint.new(1, Color3.fromRGB(35, 35, 55))
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(90, 80, 190)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(32, 32, 52))
 }
 titleGradient.Rotation = -45
 titleGradient.Parent = titleBar
@@ -71,193 +76,208 @@ titleCorner.CornerRadius = UDim.new(0, 16)
 titleCorner.Parent = titleBar
 
 local titleLabel = Instance.new("TextLabel")
-titleLabel.Size = UDim2.new(1, -60, 1, 0)
-titleLabel.Position = UDim2.new(0, 14, 0, 0)
+titleLabel.Size              = UDim2.new(1, -64, 1, 0)
+titleLabel.Position          = UDim2.new(0, 14, 0, 0)
 titleLabel.BackgroundTransparency = 1
-titleLabel.Font = Enum.Font.GothamBlack
-titleLabel.Text = "Trade Scam"
-titleLabel.TextColor3 = Color3.fromRGB(220, 210, 255)
-titleLabel.TextSize = 17
-titleLabel.TextXAlignment = Enum.TextXAlignment.Left
+titleLabel.Font              = Enum.Font.GothamBlack
+titleLabel.Text              = "Trade Scam 2.0"   -- ← changed here
+titleLabel.TextColor3        = Color3.fromRGB(225, 215, 255)
+titleLabel.TextSize          = 17
+titleLabel.TextXAlignment    = Enum.TextXAlignment.Left
 titleLabel.Parent = titleBar
 
--- Close Button
+-- Close button
 local closeBtn = Instance.new("TextButton")
-closeBtn.Size = UDim2.new(0, 24, 0, 24)
-closeBtn.Position = UDim2.new(1, -30, 0.5, -12)
-closeBtn.BackgroundColor3 = Color3.fromRGB(200, 60, 70)
-closeBtn.BorderSizePixel = 0
-closeBtn.Font = Enum.Font.GothamBold
-closeBtn.Text = "X"
-closeBtn.TextColor3 = Color3.new(1,1,1)
-closeBtn.TextSize = 16
+closeBtn.Size              = UDim2.new(0, 26, 0, 26)
+closeBtn.Position          = UDim2.new(1, -34, 0.5, -13)
+closeBtn.BackgroundColor3  = Color3.fromRGB(210, 60, 75)
+closeBtn.BorderSizePixel   = 0
+closeBtn.Font              = Enum.Font.GothamBold
+closeBtn.Text              = "×"
+closeBtn.TextColor3        = Color3.new(1,1,1)
+closeBtn.TextSize          = 18
 closeBtn.Parent = titleBar
 
 local closeCorner = Instance.new("UICorner")
-closeCorner.CornerRadius = UDim.new(0, 8)
+closeCorner.CornerRadius = UDim.new(0, 9)
 closeCorner.Parent = closeBtn
 
 closeBtn.MouseButton1Click:Connect(function()
     screenGui:Destroy()
 end)
 
--- Dragging
-local dragging = false
-local dragStart = nil
-local startPos = nil
+-- ────────────────────────────────────────────────────────────
+-- Dragging system
+-- ────────────────────────────────────────────────────────────
+local dragging, dragStart, startPos = false, nil, nil
 local originalCameraType = nil
 
-local inputBlocker = Instance.new("Frame")
-inputBlocker.Name = "DragBlocker"
-inputBlocker.Size = UDim2.new(1, 0, 1, 0)
-inputBlocker.BackgroundTransparency = 1
-inputBlocker.Active = false
-inputBlocker.ZIndex = 999999
-inputBlocker.Visible = false
-inputBlocker.Parent = screenGui
-
 titleBar.InputBegan:Connect(function(input)
+    if not (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) then
+        return
+    end
+
+    dragging   = true
+    dragStart  = input.Position
+    startPos   = mainFrame.Position
+
+    local camera = Workspace.CurrentCamera
+    if camera then
+        originalCameraType = camera.CameraType
+        camera.CameraType = Enum.CameraType.Scriptable
+    end
+
+    UserInputService.MouseBehavior = Enum.MouseBehavior.LockCurrentPosition
+end)
+
+titleBar.InputEnded:Connect(function(input)
     if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-        dragging = true
-        dragStart = input.Position
-        startPos = mainFrame.Position
-        
-        inputBlocker.Active = true
-        inputBlocker.Visible = true
-        
-        UserInputService.MouseBehavior = Enum.MouseBehavior.LockCurrentPosition
-        
+        dragging = false
+        UserInputService.MouseBehavior = Enum.MouseBehavior.Default
+
         local camera = Workspace.CurrentCamera
-        if camera then
-            originalCameraType = camera.CameraType
-            camera.CameraType = Enum.CameraType.Scriptable
+        if camera and originalCameraType then
+            camera.CameraType = originalCameraType
         end
-        
-        local conn; conn = input.Changed:Connect(function()
-            if input.UserInputState == Enum.UserInputState.End then
-                dragging = false
-                inputBlocker.Active = false
-                inputBlocker.Visible = false
-                UserInputService.MouseBehavior = Enum.MouseBehavior.Default
-                if camera and originalCameraType then
-                    camera.CameraType = originalCameraType
-                end
-                conn:Disconnect()
-            end
-        end)
     end
 end)
 
 UserInputService.InputChanged:Connect(function(input)
     if not dragging then return end
-    if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
-        local delta = input.Position - dragStart
-        mainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+    if not (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+        return
     end
+
+    local delta = input.Position - dragStart
+    mainFrame.Position = UDim2.new(
+        startPos.X.Scale,   startPos.X.Offset   + delta.X,
+        startPos.Y.Scale,   startPos.Y.Offset   + delta.Y
+    )
 end)
 
--- Toggle
-UserInputService.InputBegan:Connect(function(input, gp)
-    if gp then return end
+-- Toggle GUI visibility
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+    if gameProcessed then return end
     if input.KeyCode == Enum.KeyCode.RightShift then
         screenGui.Enabled = not screenGui.Enabled
     end
 end)
 
--- Buttons container
-local buttonsFrame = Instance.new("Frame")
-buttonsFrame.Size = UDim2.new(1, -16, 1, -52)
-buttonsFrame.Position = UDim2.new(0, 8, 0, 38)
-buttonsFrame.BackgroundTransparency = 1
-buttonsFrame.Parent = mainFrame
+-- ────────────────────────────────────────────────────────────
+-- Buttons area
+-- ────────────────────────────────────────────────────────────
+local buttonsContainer = Instance.new("Frame")
+buttonsContainer.Size              = UDim2.new(1, -16, 1, -52)
+buttonsContainer.Position          = UDim2.new(0, 8, 0, 38)
+buttonsContainer.BackgroundTransparency = 1
+buttonsContainer.Parent = mainFrame
 
-local listLayout = Instance.new("UIListLayout")
-listLayout.Padding = UDim.new(0, 7)
-listLayout.SortOrder = Enum.SortOrder.LayoutOrder
-listLayout.FillDirection = Enum.FillDirection.Vertical
-listLayout.Parent = buttonsFrame
+local uiList = Instance.new("UIListLayout")
+uiList.Padding     = UDim.new(0, 8)
+uiList.SortOrder   = Enum.SortOrder.LayoutOrder
+uiList.FillDirection = Enum.FillDirection.Vertical
+uiList.Parent = buttonsContainer
 
-local function makeToggleButton(text, baseColor, order)
-    local btn = Instance.new("TextButton")
-    btn.Size = UDim2.new(1, 0, 0, 38)
-    btn.BackgroundColor3 = baseColor
-    btn.BorderSizePixel = 0
-    btn.Font = Enum.Font.GothamSemibold
-    btn.Text = text
-    btn.TextColor3 = Color3.new(1,1,1)
-    btn.TextSize = 14
-    btn.AutoButtonColor = false
-    btn.LayoutOrder = order
-    btn.Parent = buttonsFrame
+-- ────────────────────────────────────────────────────────────
+-- Button factory (with LIGHTER colors)
+-- ────────────────────────────────────────────────────────────
+local function createToggleButton(name, baseColor, layoutOrder)
+    local button = Instance.new("TextButton")
+    button.Size               = UDim2.new(1, 0, 0, 38)
+    button.BackgroundColor3   = baseColor
+    button.BorderSizePixel    = 0
+    button.Font               = Enum.Font.GothamSemibold
+    button.Text               = name
+    button.TextColor3         = Color3.new(1,1,1)
+    button.TextSize           = 14
+    button.AutoButtonColor    = false
+    button.LayoutOrder        = layoutOrder
+    button.Parent = buttonsContainer
 
     local corner = Instance.new("UICorner")
     corner.CornerRadius = UDim.new(0, 10)
-    corner.Parent = btn
+    corner.Parent = button
 
     local stroke = Instance.new("UIStroke")
-    stroke.Color = baseColor:Lerp(Color3.new(1,1,1), 0.3)
-    stroke.Thickness = 1.8
-    stroke.Transparency = 0.5
-    stroke.Parent = btn
+    stroke.Color        = baseColor:Lerp(Color3.new(1,1,1), 0.5)   -- brighter border
+    stroke.Thickness    = 1.7
+    stroke.Transparency = 0.4
+    stroke.Parent = button
 
-    local gradient = Instance.new("UIGradient")
-    gradient.Color = ColorSequence.new{
+    local grad = Instance.new("UIGradient")
+    grad.Color = ColorSequence.new{
         ColorSequenceKeypoint.new(0, Color3.new(1,1,1)),
         ColorSequenceKeypoint.new(1, baseColor)
     }
-    gradient.Rotation = -90
-    gradient.Transparency = NumberSequence.new(0.7, 0)
-    gradient.Parent = btn
+    grad.Rotation = -90
+    grad.Transparency = NumberSequence.new{
+        NumberSequenceKeypoint.new(0, 0.5),
+        NumberSequenceKeypoint.new(1, 0.85)
+    }
+    grad.Parent = button
 
-    local isToggled = false
-    local greenGlow = Color3.fromRGB(80, 220, 120)
+    local isActive = false
+    local activeColor = Color3.fromRGB(80, 235, 130)   -- brighter green when ON
 
-    local function updateState()
-        if isToggled then
-            TweenService:Create(btn, TweenInfo.new(0.3), {BackgroundColor3 = greenGlow}):Play()
-            TweenService:Create(stroke, TweenInfo.new(0.3), {Color = greenGlow, Transparency = 0.3}):Play()
+    local function refreshVisual()
+        if isActive then
+            TweenService:Create(button, TweenInfo.new(0.28), {BackgroundColor3 = activeColor}):Play()
+            TweenService:Create(stroke, TweenInfo.new(0.28), {
+                Color = activeColor:Lerp(Color3.new(1,1,1), 0.6),
+                Transparency = 0.2
+            }):Play()
         else
-            TweenService:Create(btn, TweenInfo.new(0.3), {BackgroundColor3 = baseColor}):Play()
-            TweenService:Create(stroke, TweenInfo.new(0.3), {Color = baseColor:Lerp(Color3.new(1,1,1), 0.3), Transparency = 0.5}):Play()
+            TweenService:Create(button, TweenInfo.new(0.28), {BackgroundColor3 = baseColor}):Play()
+            TweenService:Create(stroke, TweenInfo.new(0.28), {
+                Color = baseColor:Lerp(Color3.new(1,1,1), 0.5),
+                Transparency = 0.4
+            }):Play()
         end
     end
 
-    btn.MouseButton1Click:Connect(function()
-        isToggled = not isToggled
-        updateState()
+    button.MouseButton1Click:Connect(function()
+        isActive = not isActive
+        refreshVisual()
     end)
 
-    btn.MouseEnter:Connect(function()
-        TweenService:Create(stroke, TweenInfo.new(0.25), {Transparency = 0.2}):Play()
+    -- Hover
+    button.MouseEnter:Connect(function()
+        TweenService:Create(stroke, TweenInfo.new(0.2), {Transparency = 0.1}):Play()
     end)
 
-    btn.MouseLeave:Connect(function()
-        if not isToggled then
-            TweenService:Create(stroke, TweenInfo.new(0.25), {Transparency = 0.5}):Play()
-        end
+    button.MouseLeave:Connect(function()
+        TweenService:Create(stroke, TweenInfo.new(0.2), {
+            Transparency = isActive and 0.2 or 0.4
+        }):Play()
     end)
 
-    btn.MouseButton1Down:Connect(function()
-        TweenService:Create(btn, TweenInfo.new(0.12), {Size = UDim2.new(1, 0, 0, 35)}):Play()
+    -- Click press
+    button.MouseButton1Down:Connect(function()
+        TweenService:Create(button, TweenInfo.new(0.14), {Size = UDim2.new(1,0,0,36)}):Play()
     end)
 
-    btn.MouseButton1Up:Connect(function()
-        TweenService:Create(btn, TweenInfo.new(0.18), {Size = UDim2.new(1, 0, 0, 38)}):Play()
+    button.MouseButton1Up:Connect(function()
+        TweenService:Create(button, TweenInfo.new(0.22), {Size = UDim2.new(1,0,0,38)}):Play()
     end)
+
+    refreshVisual()
 end
 
-makeToggleButton("Force Accept",         Color3.fromRGB(70, 160, 255), 1)
-makeToggleButton("Freeze Victim",        Color3.fromRGB(240, 70, 70),  2)
-makeToggleButton("Force Give All Brainrot", Color3.fromRGB(160, 70, 255), 3)
+-- Lighter button colors
+createToggleButton("Force Accept",          Color3.fromRGB(100, 180, 255),  1)   -- brighter blue
+createToggleButton("Freeze Victim",         Color3.fromRGB(255, 110, 110),  2)   -- brighter red
+createToggleButton("Force Give All Brainrot", Color3.fromRGB(180, 110, 255), 3)  -- brighter purple
 
--- Footer – now fits without overlap
+-- ────────────────────────────────────────────────────────────
+-- Footer (unchanged)
+-- ────────────────────────────────────────────────────────────
 local footer = Instance.new("TextLabel")
-footer.Size = UDim2.new(1, -16, 0, 14)
-footer.Position = UDim2.new(0, 8, 1, -20)
+footer.Size              = UDim2.new(1, -16, 0, 14)
+footer.Position          = UDim2.new(0, 8, 1, -20)
 footer.BackgroundTransparency = 1
-footer.Font = Enum.Font.Gotham
-footer.Text = "Made By MakuScripts"
-footer.TextColor3 = Color3.fromRGB(160, 160, 200)
-footer.TextSize = 12
-footer.TextTransparency = 0.4
+footer.Font              = Enum.Font.Gotham
+footer.Text              = "Made By MakuScripts"
+footer.TextColor3        = Color3.fromRGB(160, 160, 200)
+footer.TextSize          = 12
+footer.TextTransparency  = 0.4
 footer.Parent = mainFrame
