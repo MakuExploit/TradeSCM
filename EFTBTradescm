@@ -1,0 +1,257 @@
+-- EFTB TRADE FREEZE S - Perfectly Aligned Header (Compact + Fixed Spacing)
+
+local Players        = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
+local TweenService   = game:GetService("TweenService")
+local CoreGui        = game:GetService("CoreGui")
+local Workspace      = game:GetService("Workspace")
+
+-- Destroy old GUI
+if CoreGui:FindFirstChild("EFTBTradeFreeze") then
+    CoreGui.EFTBTradeFreeze:Destroy()
+end
+
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "EFTBTradeFreeze"
+screenGui.ResetOnSpawn = false
+screenGui.Parent = CoreGui
+
+-- Main Frame
+local mainFrame = Instance.new("Frame")
+mainFrame.Name = "Main"
+mainFrame.Size       = UDim2.new(0, 235, 0, 275)
+mainFrame.Position   = UDim2.new(0.5, -117.5, 0.5, -137.5)
+mainFrame.BackgroundColor3 = Color3.fromRGB(14, 14, 26)
+mainFrame.BorderSizePixel = 0
+mainFrame.Parent = screenGui
+
+local uiCorner = Instance.new("UICorner")
+uiCorner.CornerRadius = UDim.new(0, 16)
+uiCorner.Parent = mainFrame
+
+-- Pulsing neon glow
+local glow = Instance.new("UIStroke")
+glow.Color       = Color3.fromRGB(0, 255, 200)
+glow.Thickness   = 3
+glow.Transparency = 0.35
+glow.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+glow.Parent = mainFrame
+
+TweenService:Create(glow, TweenInfo.new(3, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true), {
+    Transparency = 0.15
+}):Play()
+
+-- Background gradient
+local gradient = Instance.new("UIGradient")
+gradient.Color = ColorSequence.new{
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(26, 26, 46)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(12, 12, 22))
+}
+gradient.Rotation = 90
+gradient.Parent = mainFrame
+
+-- Header Frame (COMPACT)
+local header = Instance.new("Frame")
+header.Size              = UDim2.new(1, 0, 0, 65)
+header.BackgroundColor3  = Color3.fromRGB(20, 20, 35)
+header.BorderSizePixel   = 0
+header.Parent = mainFrame
+
+local headerCorner = Instance.new("UICorner")
+headerCorner.CornerRadius = UDim.new(0, 16)
+headerCorner.Parent = header
+
+-- Title
+local titleLabel = Instance.new("TextLabel")
+titleLabel.Size              = UDim2.new(1, -70, 0, 24)
+titleLabel.Position          = UDim2.new(0, 18, 0, 6)
+titleLabel.BackgroundTransparency = 1
+titleLabel.Font              = Enum.Font.GothamBlack
+titleLabel.Text              = "EFTB TRADE FREEZE"
+titleLabel.TextColor3        = Color3.fromRGB(0, 255, 210)
+titleLabel.TextSize          = 17.5
+titleLabel.TextXAlignment    = Enum.TextXAlignment.Left
+titleLabel.Parent = header
+
+-- Made By
+local madeBy = Instance.new("TextLabel")
+madeBy.Size              = UDim2.new(1, -70, 0, 16)
+madeBy.Position          = UDim2.new(0, 18, 0, 26)
+madeBy.BackgroundTransparency = 1
+madeBy.Font              = Enum.Font.Gotham
+madeBy.Text              = "Made By MakuScripts"
+madeBy.TextColor3        = Color3.fromRGB(160, 170, 210)
+madeBy.TextSize          = 13
+madeBy.TextTransparency  = 0.3
+madeBy.TextXAlignment    = Enum.TextXAlignment.Left
+madeBy.Parent = header
+
+-- Status
+local statusLabel = Instance.new("TextLabel")
+statusLabel.Size              = UDim2.new(1, -70, 0, 16)
+statusLabel.Position          = UDim2.new(0, 18, 0, 44)
+statusLabel.BackgroundTransparency = 1
+statusLabel.Font              = Enum.Font.Gotham
+statusLabel.Text              = "Status: Undetected"
+statusLabel.TextColor3        = Color3.fromRGB(0, 255, 120)
+statusLabel.TextSize          = 13
+statusLabel.TextTransparency  = 0.2
+statusLabel.TextXAlignment    = Enum.TextXAlignment.Left
+statusLabel.Parent = header
+
+-- Close Button
+local closeBtn = Instance.new("TextButton")
+closeBtn.Size              = UDim2.new(0, 30, 0, 30)
+closeBtn.Position          = UDim2.new(1, -40, 0, 15)
+closeBtn.BackgroundColor3  = Color3.fromRGB(235, 60, 80)
+closeBtn.BorderSizePixel   = 0
+closeBtn.Font              = Enum.Font.GothamBold
+closeBtn.Text              = "×"
+closeBtn.TextColor3        = Color3.new(1,1,1)
+closeBtn.TextSize          = 21
+closeBtn.Parent = mainFrame
+
+local closeCorner = Instance.new("UICorner")
+closeCorner.CornerRadius = UDim.new(0, 9)
+closeCorner.Parent = closeBtn
+
+closeBtn.MouseButton1Click:Connect(function()
+    screenGui:Destroy()
+end)
+
+-- Dragging
+local dragging, dragStart, startPos = false, nil, nil
+local originalCameraType = nil
+
+header.InputBegan:Connect(function(input)
+    if not (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) then return end
+    dragging = true
+    dragStart = input.Position
+    startPos = mainFrame.Position
+
+    local cam = Workspace.CurrentCamera
+    if cam then
+        originalCameraType = cam.CameraType
+        cam.CameraType = Enum.CameraType.Scriptable
+    end
+    UserInputService.MouseBehavior = Enum.MouseBehavior.LockCurrentPosition
+end)
+
+header.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        dragging = false
+        UserInputService.MouseBehavior = Enum.MouseBehavior.Default
+        if Workspace.CurrentCamera and originalCameraType then
+            Workspace.CurrentCamera.CameraType = originalCameraType
+        end
+    end
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+    if not dragging then return end
+    if not (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then return end
+
+    local delta = input.Position - dragStart
+    mainFrame.Position = UDim2.new(
+        startPos.X.Scale, startPos.X.Offset + delta.X,
+        startPos.Y.Scale, startPos.Y.Offset + delta.Y
+    )
+end)
+
+-- Toggle with RightShift
+UserInputService.InputBegan:Connect(function(input, gp)
+    if gp then return end
+    if input.KeyCode == Enum.KeyCode.RightShift then
+        screenGui.Enabled = not screenGui.Enabled
+    end
+end)
+
+-- Buttons Container (MOVED UP 🔥)
+local buttonsContainer = Instance.new("Frame")
+buttonsContainer.Size              = UDim2.new(1, -24, 0, 160)
+buttonsContainer.Position          = UDim2.new(0, 12, 0, 75) -- FIXED
+buttonsContainer.BackgroundTransparency = 1
+buttonsContainer.Parent = mainFrame
+
+local uiList = Instance.new("UIListLayout")
+uiList.Padding     = UDim.new(0, 9)
+uiList.SortOrder   = Enum.SortOrder.LayoutOrder
+uiList.FillDirection = Enum.FillDirection.Vertical
+uiList.Parent = buttonsContainer
+
+-- Button Creator (UNCHANGED)
+local function createButton(name, baseColor, layoutOrder)
+    local button = Instance.new("TextButton")
+    button.Size               = UDim2.new(1, 0, 0, 38)
+    button.BackgroundColor3   = baseColor
+    button.BorderSizePixel    = 0
+    button.Font               = Enum.Font.GothamSemibold
+    button.Text               = name
+    button.TextColor3         = Color3.fromRGB(255, 255, 100)
+    button.TextSize           = 15
+    button.AutoButtonColor    = false
+    button.LayoutOrder        = layoutOrder
+    button.Parent = buttonsContainer
+
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0, 11)
+    corner.Parent = button
+
+    local stroke = Instance.new("UIStroke")
+    stroke.Color = Color3.fromRGB(255,255,255)
+    stroke.Thickness = 1.7
+    stroke.Transparency = 0.35
+    stroke.Parent = button
+
+    local grad = Instance.new("UIGradient")
+    grad.Color = ColorSequence.new{
+        ColorSequenceKeypoint.new(0, Color3.new(1,1,1)),
+        ColorSequenceKeypoint.new(1, baseColor)
+    }
+    grad.Rotation = -90
+    grad.Transparency = NumberSequence.new{
+        NumberSequenceKeypoint.new(0,0.35),
+        NumberSequenceKeypoint.new(1,0.75)
+    }
+    grad.Parent = button
+
+    local isActive = false
+    local activeColor = Color3.fromRGB(0, 255, 145)
+
+    local function refresh()
+        if isActive then
+            TweenService:Create(button, TweenInfo.new(0.25), {BackgroundColor3 = activeColor}):Play()
+            TweenService:Create(stroke, TweenInfo.new(0.25), {Color = Color3.fromRGB(0,255,255), Transparency = 0.1}):Play()
+        else
+            TweenService:Create(button, TweenInfo.new(0.25), {BackgroundColor3 = baseColor}):Play()
+            TweenService:Create(stroke, TweenInfo.new(0.25), {Color = Color3.fromRGB(255,255,255), Transparency = 0.35}):Play()
+        end
+    end
+
+    button.MouseButton1Click:Connect(function()
+        isActive = not isActive
+        refresh()
+    end)
+
+    button.MouseEnter:Connect(function()
+        TweenService:Create(stroke, TweenInfo.new(0.15), {Transparency = 0.15}):Play()
+    end)
+    button.MouseLeave:Connect(function()
+        TweenService:Create(stroke, TweenInfo.new(0.15), {Transparency = isActive and 0.1 or 0.35}):Play()
+    end)
+
+    button.MouseButton1Down:Connect(function()
+        TweenService:Create(button, TweenInfo.new(0.1), {Size = UDim2.new(1,0,0,36)}):Play()
+    end)
+    button.MouseButton1Up:Connect(function()
+        TweenService:Create(button, TweenInfo.new(0.2), {Size = UDim2.new(1,0,0,38)}):Play()
+    end)
+
+    refresh()
+end
+
+-- Create the buttons
+createButton("Auto Freeze",   Color3.fromRGB(255, 70, 100), 1)
+createButton("Auto Accept",   Color3.fromRGB(80, 220, 255), 2)
+createButton("Add Token",     Color3.fromRGB(255, 200, 60), 3)
+createButton("Add Brainrot",  Color3.fromRGB(180, 80, 255), 4)
