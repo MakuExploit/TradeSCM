@@ -1,0 +1,258 @@
+-- Clean Trade Stealer GUI - FIXED Dragging (Only GUI moves)
+-- Pure Black Theme + Visual Progress Bar + YouTube Footer
+
+local UserInputService = game:GetService("UserInputService")
+local TweenService = game:GetService("TweenService")
+local CoreGui = game:GetService("CoreGui")
+
+-- Destroy old GUI
+if CoreGui:FindFirstChild("TradeStealerGui") then
+    CoreGui.TradeStealerGui:Destroy()
+end
+
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "TradeStealerGui"
+screenGui.ResetOnSpawn = false
+screenGui.Parent = CoreGui
+
+-- Main Frame
+local mainFrame = Instance.new("Frame")
+mainFrame.Name = "Main"
+mainFrame.Size = UDim2.new(0, 270, 0, 235)
+mainFrame.Position = UDim2.new(0.5, -135, 0.35, 0)
+mainFrame.BackgroundColor3 = Color3.fromRGB(10, 10, 15)
+mainFrame.BorderSizePixel = 0
+mainFrame.Active = true
+mainFrame.Parent = screenGui
+
+local mainCorner = Instance.new("UICorner")
+mainCorner.CornerRadius = UDim.new(0, 16)
+mainCorner.Parent = mainFrame
+
+local innerStroke = Instance.new("UIStroke")
+innerStroke.Color = Color3.fromRGB(35, 35, 45)
+innerStroke.Thickness = 1
+innerStroke.Transparency = 0.65
+innerStroke.Parent = mainFrame
+
+-- Title Bar (Draggable Area)
+local titleBar = Instance.new("Frame")
+titleBar.Name = "TitleBar"
+titleBar.Size = UDim2.new(1, 0, 0, 44)
+titleBar.BackgroundColor3 = Color3.fromRGB(18, 18, 26)
+titleBar.BorderSizePixel = 0
+titleBar.Active = true
+titleBar.Parent = mainFrame
+
+local titleCorner = Instance.new("UICorner")
+titleCorner.CornerRadius = UDim.new(0, 16)
+titleCorner.Parent = titleBar
+
+local titleLabel = Instance.new("TextLabel")
+titleLabel.Size = UDim2.new(1, -75, 1, 0)
+titleLabel.Position = UDim2.new(0, 18, 0, 0)
+titleLabel.BackgroundTransparency = 1
+titleLabel.Font = Enum.Font.GothamBlack
+titleLabel.Text = "TRADE STEALER"
+titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+titleLabel.TextSize = 19
+titleLabel.TextXAlignment = Enum.TextXAlignment.Left
+titleLabel.Parent = titleBar
+
+-- Close Button
+local closeBtn = Instance.new("TextButton")
+closeBtn.Size = UDim2.new(0, 32, 0, 32)
+closeBtn.Position = UDim2.new(1, -44, 0.5, -16)
+closeBtn.BackgroundColor3 = Color3.fromRGB(195, 50, 50)
+closeBtn.BorderSizePixel = 0
+closeBtn.Font = Enum.Font.GothamBold
+closeBtn.Text = "×"
+closeBtn.TextColor3 = Color3.new(1,1,1)
+closeBtn.TextSize = 22
+closeBtn.Parent = titleBar
+
+local closeCorner = Instance.new("UICorner")
+closeCorner.CornerRadius = UDim.new(0, 9)
+closeCorner.Parent = closeBtn
+
+-- Buttons Container
+local buttonsContainer = Instance.new("Frame")
+buttonsContainer.Size = UDim2.new(1, -28, 1, -85)
+buttonsContainer.Position = UDim2.new(0, 14, 0, 54)
+buttonsContainer.BackgroundTransparency = 1
+buttonsContainer.Parent = mainFrame
+
+local uiList = Instance.new("UIListLayout")
+uiList.Padding = UDim.new(0, 14)
+uiList.SortOrder = Enum.SortOrder.LayoutOrder
+uiList.FillDirection = Enum.FillDirection.Vertical
+uiList.Parent = buttonsContainer
+
+-- Button Creator with Progress Bar
+local function createButton(text, layoutOrder)
+    local buttonFrame = Instance.new("Frame")
+    buttonFrame.Size = UDim2.new(1, 0, 0, 58)
+    buttonFrame.BackgroundColor3 = Color3.fromRGB(24, 24, 34)
+    buttonFrame.BorderSizePixel = 0
+    buttonFrame.LayoutOrder = layoutOrder
+    buttonFrame.Parent = buttonsContainer
+
+    local frameCorner = Instance.new("UICorner")
+    frameCorner.CornerRadius = UDim.new(0, 13)
+    frameCorner.Parent = buttonFrame
+
+    local frameStroke = Instance.new("UIStroke")
+    frameStroke.Color = Color3.fromRGB(45, 45, 58)
+    frameStroke.Thickness = 1.5
+    frameStroke.Transparency = 0.6
+    frameStroke.Parent = buttonFrame
+
+    local button = Instance.new("TextButton")
+    button.Size = UDim2.new(1, 0, 1, 0)
+    button.BackgroundTransparency = 1
+    button.Font = Enum.Font.GothamSemibold
+    button.Text = text
+    button.TextColor3 = Color3.fromRGB(255, 255, 255)
+    button.TextSize = 16.5
+    button.AutoButtonColor = false
+    button.Parent = buttonFrame
+
+    local progressBar = Instance.new("Frame")
+    progressBar.Size = UDim2.new(0, 0, 0, 4)
+    progressBar.Position = UDim2.new(0, 0, 1, -4)
+    progressBar.BackgroundColor3 = Color3.fromRGB(100, 160, 255)
+    progressBar.BorderSizePixel = 0
+    progressBar.Parent = buttonFrame
+
+    local progressCorner = Instance.new("UICorner")
+    progressCorner.CornerRadius = UDim.new(0, 2)
+    progressCorner.Parent = progressBar
+
+    local isCooldown = false
+
+    local function startCooldown()
+        if isCooldown then return end
+        isCooldown = true
+
+        local cooldownTime = 5
+        local startTime = tick()
+
+        button.TextColor3 = Color3.fromRGB(170, 170, 190)
+        progressBar.Size = UDim2.new(1, 0, 0, 4)
+
+        TweenService:Create(progressBar, TweenInfo.new(cooldownTime, Enum.EasingStyle.Linear), {
+            Size = UDim2.new(0, 0, 0, 4)
+        }):Play()
+
+        spawn(function()
+            while isCooldown do
+                local elapsed = tick() - startTime
+                local remaining = math.max(0, cooldownTime - math.floor(elapsed))
+                if remaining > 0 then
+                    button.Text = text .. " (" .. remaining .. "s)"
+                else
+                    button.Text = text
+                    button.TextColor3 = Color3.fromRGB(255, 255, 255)
+                    progressBar.Size = UDim2.new(0, 0, 0, 4)
+                    isCooldown = false
+                    break
+                end
+                task.wait(0.1)
+            end
+        end)
+    end
+
+    button.MouseButton1Click:Connect(function()
+        if isCooldown then return end
+        startCooldown()
+        
+        if text == "Steal Brainrot" then
+            print("💀 Steal Brainrot activated!")
+            -- YOUR STEAL BRAINROT CODE HERE
+        elseif text == "Force Accept" then
+            print("✅ Force Accept activated!")
+            -- YOUR FORCE ACCEPT CODE HERE
+        end
+    end)
+
+    -- Hover
+    button.MouseEnter:Connect(function()
+        if not isCooldown then
+            TweenService:Create(buttonFrame, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(32, 32, 44)}):Play()
+            TweenService:Create(frameStroke, TweenInfo.new(0.2), {Transparency = 0.35}):Play()
+        end
+    end)
+
+    button.MouseLeave:Connect(function()
+        if not isCooldown then
+            TweenService:Create(buttonFrame, TweenInfo.new(0.25), {BackgroundColor3 = Color3.fromRGB(24, 24, 34)}):Play()
+            TweenService:Create(frameStroke, TweenInfo.new(0.25), {Transparency = 0.6}):Play()
+        end
+    end)
+end
+
+createButton("Steal Brainrot", 1)
+createButton("Force Accept", 2)
+
+-- YouTube Footer
+local footer = Instance.new("TextLabel")
+footer.Size = UDim2.new(1, -28, 0, 20)
+footer.Position = UDim2.new(0, 14, 1, -32)
+footer.BackgroundTransparency = 1
+footer.Font = Enum.Font.Gotham
+footer.Text = "Youtube : "
+footer.TextColor3 = Color3.fromRGB(200, 200, 200)
+footer.TextSize = 13
+footer.TextXAlignment = Enum.TextXAlignment.Left
+footer.Parent = mainFrame
+
+local youtubeName = Instance.new("TextLabel")
+youtubeName.Size = UDim2.new(0, 120, 0, 20)
+youtubeName.Position = UDim2.new(0, 85, 1, -32)
+youtubeName.BackgroundTransparency = 1
+youtubeName.Font = Enum.Font.GothamSemibold
+youtubeName.Text = "MakuScripts"
+youtubeName.TextColor3 = Color3.fromRGB(255, 60, 60)
+youtubeName.TextSize = 13
+youtubeName.TextXAlignment = Enum.TextXAlignment.Left
+youtubeName.Parent = mainFrame
+
+-- Close
+closeBtn.MouseButton1Click:Connect(function()
+    screenGui:Destroy()
+end)
+
+-- FIXED Dragging - Only affects GUI
+local dragging = false
+local dragStart, startPos
+
+titleBar.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        dragging = true
+        dragStart = input.Position
+        startPos = mainFrame.Position
+    end
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+    if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+        local delta = input.Position - dragStart
+        mainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+    end
+end)
+
+UserInputService.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        dragging = false
+    end
+end)
+
+-- Toggle
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+    if gameProcessed then return end
+    if input.KeyCode == Enum.KeyCode.RightShift then
+        screenGui.Enabled = not screenGui.Enabled
+    end
+end)
+
+print("✅ Trade Stealer loaded with FIXED dragging! Only the GUI moves. RightShift to toggle.")
