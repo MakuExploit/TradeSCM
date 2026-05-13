@@ -1,0 +1,260 @@
+-- Trade Bypasser GUI - Updated Design
+-- Made by MakuScripts in Header + Smaller Fitted Buttons
+
+local UserInputService = game:GetService("UserInputService")
+local TweenService = game:GetService("TweenService")
+local CoreGui = game:GetService("CoreGui")
+
+if CoreGui:FindFirstChild("TradeBypasserGui") then
+    CoreGui.TradeBypasserGui:Destroy()
+end
+
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "TradeBypasserGui"
+screenGui.ResetOnSpawn = false
+screenGui.Parent = CoreGui
+
+-- Main Frame
+local mainFrame = Instance.new("Frame")
+mainFrame.Size = UDim2.new(0, 280, 0, 245)
+mainFrame.Position = UDim2.new(0.5, -140, 0.35, 0)
+mainFrame.BackgroundColor3 = Color3.fromRGB(8, 8, 18)
+mainFrame.BorderSizePixel = 0
+mainFrame.Active = true
+mainFrame.Parent = screenGui
+
+local mainCorner = Instance.new("UICorner")
+mainCorner.CornerRadius = UDim.new(0, 18)
+mainCorner.Parent = mainFrame
+
+local mainStroke = Instance.new("UIStroke")
+mainStroke.Color = Color3.fromRGB(90, 60, 255)
+mainStroke.Thickness = 1.8
+mainStroke.Transparency = 0.5
+mainStroke.Parent = mainFrame
+
+-- Title Bar (Now contains both title and Made by)
+local titleBar = Instance.new("Frame")
+titleBar.Size = UDim2.new(1, 0, 0, 58)
+titleBar.BackgroundColor3 = Color3.fromRGB(15, 15, 35)
+titleBar.BorderSizePixel = 0
+titleBar.Parent = mainFrame
+
+local titleCorner = Instance.new("UICorner")
+titleCorner.CornerRadius = UDim.new(0, 18)
+titleCorner.Parent = titleBar
+
+local titleLabel = Instance.new("TextLabel")
+titleLabel.Size = UDim2.new(1, -70, 0, 32)
+titleLabel.Position = UDim2.new(0, 20, 0, 8)
+titleLabel.BackgroundTransparency = 1
+titleLabel.Font = Enum.Font.GothamBlack
+titleLabel.Text = "TRADE BYPASSER"
+titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+titleLabel.TextSize = 20
+titleLabel.TextXAlignment = Enum.TextXAlignment.Left
+titleLabel.Parent = titleBar
+
+local madeBy = Instance.new("TextLabel")
+madeBy.Size = UDim2.new(1, -70, 0, 18)
+madeBy.Position = UDim2.new(0, 20, 0, 36)
+madeBy.BackgroundTransparency = 1
+madeBy.Font = Enum.Font.Gotham
+madeBy.Text = "Made by MakuScripts"
+madeBy.TextColor3 = Color3.fromRGB(255, 80, 80)
+madeBy.TextSize = 13
+madeBy.TextTransparency = 0.2
+madeBy.Parent = titleBar
+
+-- Close Button
+local closeBtn = Instance.new("TextButton")
+closeBtn.Size = UDim2.new(0, 34, 0, 34)
+closeBtn.Position = UDim2.new(1, -42, 0.5, -17)
+closeBtn.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+closeBtn.Text = "×"
+closeBtn.TextColor3 = Color3.new(1,1,1)
+closeBtn.TextSize = 24
+closeBtn.Font = Enum.Font.GothamBold
+closeBtn.Parent = titleBar
+
+local closeCorner = Instance.new("UICorner")
+closeCorner.CornerRadius = UDim.new(0, 10)
+closeCorner.Parent = closeBtn
+
+-- Container for Buttons
+local container = Instance.new("Frame")
+container.Size = UDim2.new(1, -32, 1, -88)
+container.Position = UDim2.new(0, 16, 0, 68)
+container.BackgroundTransparency = 1
+container.Parent = mainFrame
+
+local uiList = Instance.new("UIListLayout")
+uiList.Padding = UDim.new(0, 10)
+uiList.SortOrder = Enum.SortOrder.LayoutOrder
+uiList.Parent = container
+
+-- Bypass Toggle Button (Smaller)
+local bypassEnabled = false
+local isInjecting = false
+
+local bypassBtn = Instance.new("TextButton")
+bypassBtn.Size = UDim2.new(1, 0, 0, 52)
+bypassBtn.BackgroundColor3 = Color3.fromRGB(30, 30, 45)
+bypassBtn.Text = "Bypass : OFF"
+bypassBtn.TextColor3 = Color3.fromRGB(255, 90, 90)
+bypassBtn.TextSize = 16
+bypassBtn.Font = Enum.Font.GothamSemibold
+bypassBtn.Parent = container
+
+local bypassCorner = Instance.new("UICorner")
+bypassCorner.CornerRadius = UDim.new(0, 12)
+bypassCorner.Parent = bypassBtn
+
+local bypassStroke = Instance.new("UIStroke")
+bypassStroke.Color = Color3.fromRGB(120, 80, 255)
+bypassStroke.Thickness = 1.8
+bypassStroke.Parent = bypassBtn
+
+local progressBar = Instance.new("Frame")
+progressBar.Size = UDim2.new(0, 0, 0, 5)
+progressBar.Position = UDim2.new(0, 0, 1, -5)
+progressBar.BackgroundColor3 = Color3.fromRGB(120, 80, 255)
+progressBar.BorderSizePixel = 0
+progressBar.Parent = bypassBtn
+
+local pbCorner = Instance.new("UICorner")
+pbCorner.CornerRadius = UDim.new(0, 3)
+pbCorner.Parent = progressBar
+
+bypassBtn.MouseButton1Click:Connect(function()
+    if isInjecting then return end
+
+    if not bypassEnabled then
+        isInjecting = true
+        bypassBtn.Text = "Injecting Bypass..."
+        bypassBtn.TextColor3 = Color3.fromRGB(255, 220, 100)
+
+        progressBar.Size = UDim2.new(1, 0, 0, 5)
+        TweenService:Create(progressBar, TweenInfo.new(5, Enum.EasingStyle.Linear), {
+            Size = UDim2.new(0, 0, 0, 5)
+        }):Play()
+
+        task.delay(5, function()
+            bypassEnabled = true
+            isInjecting = false
+            bypassBtn.Text = "Bypass : ON"
+            bypassBtn.TextColor3 = Color3.fromRGB(80, 255, 140)
+            print("✅ Trade Bypass Injected Successfully!")
+        end)
+    else
+        bypassEnabled = false
+        bypassBtn.Text = "Bypass : OFF"
+        bypassBtn.TextColor3 = Color3.fromRGB(255, 90, 90)
+        progressBar.Size = UDim2.new(0, 0, 0, 5)
+        print("❌ Trade Bypass Disabled")
+    end
+end)
+
+-- Smaller Action Buttons
+local function createButton(name, order)
+    local btnFrame = Instance.new("Frame")
+    btnFrame.Size = UDim2.new(1, 0, 0, 50)  -- Smaller
+    btnFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 40)
+    btnFrame.LayoutOrder = order
+    btnFrame.Parent = container
+
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0, 12)
+    corner.Parent = btnFrame
+
+    local stroke = Instance.new("UIStroke")
+    stroke.Color = Color3.fromRGB(70, 70, 90)
+    stroke.Thickness = 1.5
+    stroke.Parent = btnFrame
+
+    local btn = Instance.new("TextButton")
+    btn.Size = UDim2.new(1,0,1,0)
+    btn.BackgroundTransparency = 1
+    btn.Text = name
+    btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    btn.TextSize = 15.5
+    btn.Font = Enum.Font.GothamSemibold
+    btn.Parent = btnFrame
+
+    local isCooldown = false
+
+    btn.MouseButton1Click:Connect(function()
+        if isCooldown then return end
+        isCooldown = true
+
+        btn.Text = name .. " (5s)"
+        TweenService:Create(btnFrame, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(45, 45, 65)}):Play()
+
+        task.delay(5, function()
+            isCooldown = false
+            btn.Text = name
+            TweenService:Create(btnFrame, TweenInfo.new(0.3), {BackgroundColor3 = Color3.fromRGB(25, 25, 40)}):Play()
+        end)
+
+        if name == "Add Brainrot" then
+            print("🧠 Add Brainrot activated!")
+        elseif name == "Auto Accept" then
+            print("✅ Auto Accept activated!")
+        end
+    end)
+
+    btn.MouseEnter:Connect(function()
+        if not isCooldown then
+            TweenService:Create(btnFrame, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(35, 35, 55)}):Play()
+        end
+    end)
+
+    btn.MouseLeave:Connect(function()
+        if not isCooldown then
+            TweenService:Create(btnFrame, TweenInfo.new(0.25), {BackgroundColor3 = Color3.fromRGB(25, 25, 40)}):Play()
+        end
+    end)
+end
+
+createButton("Add Brainrot", 2)
+createButton("Auto Accept", 3)
+
+-- Close
+closeBtn.MouseButton1Click:Connect(function()
+    screenGui:Destroy()
+end)
+
+-- Dragging
+local dragging = false
+local dragStart, startPos
+
+titleBar.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        dragging = true
+        dragStart = input.Position
+        startPos = mainFrame.Position
+    end
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+    if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+        local delta = input.Position - dragStart
+        mainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+    end
+end)
+
+UserInputService.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        dragging = false
+    end
+end)
+
+-- Toggle with RightShift
+UserInputService.InputBegan:Connect(function(input, gp)
+    if gp then return end
+    if input.KeyCode == Enum.KeyCode.RightShift then
+        screenGui.Enabled = not screenGui.Enabled
+    end
+end)
+
+print("✅ Trade Bypasser GUI Updated! | RightShift to toggle")
